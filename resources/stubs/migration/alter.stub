@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Database\Migrations;
+
+use App\Core\Db\Column;
+use Phalcon\Db\Index;
+use Phalcon\Db\Reference;
+
+class {{ className }}
+{
+    public function up()
+    {
+        $connection = resolve('db');
+        $schema = config('database.mysql.dbname');
+
+        // modify
+        $oldColumn = new Column('name', [
+            'type' => Column::TYPE_VARCHAR,
+            'size' => 45,
+            'notNull' => true
+        ]);
+
+        $newColumn = new Column('name', [
+            'type' => Column::TYPE_VARCHAR,
+            'size' => 15,
+            'notNull' => true
+        ]);
+
+        $connection->modifyColumn('{{ tableName }}', $schema, $newColumn, $oldColumn);
+
+        // add
+        $descriptionColumn = new Column('description', [
+            'type' => Column::TYPE_TEXT,
+            'notNull' => true
+        ]);
+        $connection->addColumn('{{ tableName }}', $schema, $descriptionColumn);
+    }
+
+    public function down()
+    {
+        $connection = resolve('db');
+        $schema = config('database.mysql.dbname');
+
+        // recover modify
+        $oldColumn = new Column('name', [
+             'type' => Column::TYPE_VARCHAR,
+             'size' => 45,
+             'notNull' => true
+        ]);
+
+        $newColumn = new Column('name', [
+             'type' => Column::TYPE_VARCHAR,
+              'size' => 15,
+              'notNull' => true
+        ]);
+
+        $connection->modifyColumn('{{ tableName }}', $schema, $newColumn, $oldColumn);
+
+        // drop Column
+        $connection->dropColumn('{{ tableName }}', $schema, 'description');
+    }
+}

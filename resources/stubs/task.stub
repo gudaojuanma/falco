@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Console\Tasks;
+
+use Phalcon\Cli\Task;
+
+class {{ className }} extends Task
+{
+    public function mainAction()
+    {
+        $this->output->info('{{ className }} generate successful');
+    }
+
+}

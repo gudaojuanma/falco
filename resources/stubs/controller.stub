@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Phalcon\Validation;
+use Phalcon\Mvc\Controller;
+use {{ modelClass }};
+
+class {{ modelName }}Controller extends Controller
+{
+    public function indexAction()
+    {
+        $page = max(1, $this->request->getQuery('page', 'int', 1));
+        $size = min($this->request->getQuery('size', 'int', 20), 100);
+        $offset = ($page - 1) * $size;
+
+        $records = {{ modelClass }}::find([
+            'offset' => $offset,
+            'limit' => $size
+        ]);
+
+        $total = {{ modelClass }}::count();
+
+        return $this->response->setJsonContent([
+            'records' => $records,
+            'total' => $total
+        ]);
+    }
+
+    public function showAction({{ modelName }} ${{ instanceName }})
+    {
+        return $this->response->setJsonContent(${{ instanceName }});
+    }
+
+    public function storeAction()
+    {
+        ${{ instanceName }} = new {{ modelName }}();
+
+        $data = $this->request->getPost();
+        $validation = $this->validation(${{ instanceName }});
+        $messages = $validation->validate($data);
+        if (count($messages)) {
+            return $this->response->unprocessable($validation);
+        }
+
+        if (!${{ instanceName }}->save()) {
+            return $this->response->unprocessable(${{ instanceName }});
+        }
+    }
+
+    public function updateAction({{ modelName }} ${{ instanceName }})
+    {
+        $data = $this->request->getPut();
+        $validation = $this->validation(${{ instanceName }});
+        $messages = $validation->validate($data);
+        if (count($messages)) {
+            return $this->response->unprocessable($validation);
+        }
+
+        if (!${{ instanceName }}->save()) {
+            return $this->response->unprocessable(${{ instanceName }});
+        }
+    }
+
+    public function destroyAction({{ modelName }} ${{ instanceName }})
+    {
+        if (${{ instanceName }}->delete() === false) {
+            return $this->response->unprocessable(${{ instanceName }});
+        }
+    }
+
+    protected function validation({{ modelName }} ${{ instanceName }})
+    {
+        $validation = new Validation();
+
+        return $validation;
+    }
+}

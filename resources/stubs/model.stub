@@ -1,0 +1,15 @@
+<?php
+
+namespace {{ namespace }};
+
+use Phalcon\Mvc\Model;
+
+class {{ className }} extends Model
+{
+    public $id;
+
+    public function initialize()
+    {
+        $this->setSource('{{ tableName }}');
+    }
+}
