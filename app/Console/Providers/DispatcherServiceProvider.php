@@ -8,7 +8,6 @@ use Phalcon\Di\ServiceProviderInterface;
 
 class DispatcherServiceProvider implements  ServiceProviderInterface
 {
-
     public function register(DiInterface $di)
     {
         $di->set('dispatcher', function() {
@@ -18,5 +17,4 @@ class DispatcherServiceProvider implements  ServiceProviderInterface
             return $dispatcher;
         }, true);
     }
-
 }

@@ -14,37 +14,34 @@ class DispatcherEventListener
     {
         $controllerClass = $dispatcher->getControllerClass();
         $method = $dispatcher->getActiveMethod();
+        $parameters = $dispatcher->getParams();
 
         try {
-            $dispatcherParameters = $dispatcher->getParams();
+            $methodReflection = new ReflectionMethod($controllerClass, $method);
+            $parameterReflections = $methodReflection->getParameters();
 
-            $reflection = new ReflectionMethod($controllerClass, $method);
-            $parameters = $reflection->getParameters();
+            foreach ($parameterReflections as $parameterReflection) {
+                $name = $parameterReflection->getName();
+                if (! isset($parameters[$name])) continue;
 
-            foreach ($parameters as $parameter) {
-                $name = $parameter->getName();
-                if (isset($dispatcherParameters[$name])) {
-                    if (($class = $parameter->getClass())) {
-                        $className = $class->name;
-                        // 注入模型
-                        if (is_subclass_of($className, Model::class)) {
-                            $id = $dispatcherParameters[$name];
-                            if (($model = $className::findFirstById($id))) {
-                                $dispatcherParameters[$name] = $model;
-                            } else {
-                                $dispatcher->forward([
-                                    'controller' => 'error',
-                                    'action' => 'show404'
-                                ]);
-                            }
-                        }
+                $classReflection = $parameterReflection->getClass();
+                if ($classReflection->isSubclassOf(Model::class)) {
+                    $modelHandler = [$classReflection->name, 'findFirstById'];
+                    if (($model = call_user_func($modelHandler, $parameters[$name]))) {
+                        $parameters[$name] = $model;
+                        continue;
                     }
+
+                    $dispatcher->forward([
+                        'controller' => 'error',
+                        'action' => 'show404'
+                    ]);
+                    break;
                 }
             }
-            $dispatcher->setParams($dispatcherParameters);
+            $dispatcher->setParams($parameters);
         } catch (Exception $e) {
-            $logger = resolve('logger');
-            $logger->error($e->getMessage());
+            resolve('logger')->error($e->getMessage());
         }
     }
 

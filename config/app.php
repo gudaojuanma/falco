@@ -15,12 +15,10 @@ return [
 
     'middleware' => [
         'auth' => \App\Http\Middleware\Authenticate::class,
-        'frontend' => \App\Http\Middleware\Frontend::class,
     ],
 
     'providers' => [
         'global' => [
-            \App\Providers\ConfigServiceProvider::class,
             \App\Providers\CacheServiceProvider::class,
             \App\Providers\DbServiceProvider::class,
             \App\Providers\RedisServiceProvider::class,
@@ -29,12 +27,12 @@ return [
             \App\Providers\BeanstalkServiceProvider::class,
         ],
         'http' => [
-            \App\Http\Providers\AgentServiceProvider::class,
-            \App\Http\Providers\AssetsServiceProvider::class,
-            \App\Http\Providers\VoltServiceProvider::class,
-            \App\Http\Providers\ViewServiceProvider::class,
-            \App\Http\Providers\SessionServiceProvider::class,
-            \App\Http\Providers\GuardServiceProvider::class,
+            // \App\Http\Providers\AgentServiceProvider::class,
+            // \App\Http\Providers\AssetsServiceProvider::class,
+            // \App\Http\Providers\VoltServiceProvider::class,
+            // \App\Http\Providers\ViewServiceProvider::class,
+            // \App\Http\Providers\SessionServiceProvider::class,
+            // \App\Http\Providers\GuardServiceProvider::class,
             \App\Http\Providers\RouterServiceProvider::class,
             \App\Http\Providers\DispatcherServiceProvider::class,
             \App\Http\Providers\ResponseServiceProvider::class,

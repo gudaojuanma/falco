@@ -186,27 +186,27 @@ class MakeTask extends Task
         $middleware = isset($params['middleware']) ? trim($params['middleware']) : null;
 
         if (empty($middleware)) {
-            $this->error('Middleware %s generate failed', $middleware);
+            $this->output->error('option --middleware= is empty ', $middleware);
             return false;
         }
 
         $stub = file_get_contents(stubs_path('middleware.stub'));
 
-        $code = str_replace('{middleware}', $middleware, $stub);
+        $code = str_replace('{className}', $middleware, $stub);
 
-        $path = sprintf('%s/app/Http/Middlewares/%s.php', BASE_PATH, $middleware);
+        $path = sprintf('%s/app/Http/Middleware/%s.php', BASE_PATH, $middleware);
 
         if (file_exists($path)) {
-            $this->warning(sprintf('Middleware %s already exists', $path));
+            $this->output->comment(sprintf('Middleware %s already exists', $path));
             return false;
         }
 
         $length = file_put_contents($path, $code);
         if ($length === strlen($code)) {
-            return $this->success('Middleware %s generate successfully', $middleware);
+            return $this->output->info('Middleware %s generate successfully', $middleware);
         }
 
-        $this->error('Middleware %s generate failed', $middleware);
+        $this->output->error('Middleware %s generate failed', $middleware);
     }
 
     /**

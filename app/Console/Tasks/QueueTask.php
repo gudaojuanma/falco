@@ -18,6 +18,9 @@ class QueueTask extends Task
         $pidfile = storage_path('run/beanstalk.' . getmypid());
         touch($pidfile);
 
+        $config = config('queue.beanstalk');
+        $this->beanstalk->watch($config->tube);
+
         while (($job = $this->beanstalk->reserve()) !== false) {
             if (! file_exists($pidfile)) {
                 // 发现需要重启消费进程，将取出的任务放回队列

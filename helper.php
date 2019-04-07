@@ -16,18 +16,27 @@ if (! function_exists('env')) {
     }
 }
 
-if (! function_exists('register_services')) {
+if (! function_exists('register')) {
     /**
-     * @param string $providerGroup
+     * @param string|array $provider
+     * @return mixed
      */
-    function register_services($providerGroup)
+    function register($provider)
     {
-        $di = \Phalcon\Di::getDefault();
-        $providerClasses = config($providerGroup);
-        foreach ($providerClasses as $providerClass) {
-            $implements = class_implements($providerClass);
-            if (in_array(\Phalcon\Di\ServiceProviderInterface::class, $implements)) {
-                $di->register(new $providerClass());
+        if (is_string($provider)) {
+            if (! class_exists($provider)) return false;
+
+            $di = \Phalcon\Di::getDefault();
+            $implements = class_implements($provider);
+            if (! in_array(\Phalcon\Di\ServiceProviderInterface::class, $implements)) return false;
+
+            $di->register(new $provider());
+            return true;
+        }
+        
+        if (is_array($provider)) {
+            foreach ($provider as $providerClass) {
+                register($providerClass);
             }
         }
     }
@@ -76,8 +85,9 @@ if (! function_exists('dispatch')) {
      */
     function dispatch($classname, $parameters = [], $priority = 255, $delay = 0, $ttr = 3600)
     {
+        $config = config('queue.beanstalk');
         $beanstalk = resolve('beanstalk');
-
+        $beanstalk->choose($config->tube);
         return $beanstalk->put([
             'classname' => $classname,
             'parameters' => $parameters

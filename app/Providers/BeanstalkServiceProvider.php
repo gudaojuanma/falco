@@ -13,15 +13,10 @@ class BeanstalkServiceProvider implements ServiceProviderInterface
         $di->set('beanstalk', function() {
             $config = config('queue.beanstalk');
 
-            $beanstalk = new Beanstalk([
+            return new Beanstalk([
                 'host' => $config->host,
                 'port' => $config->port
             ]);
-
-            $beanstalk->choose($config->tube);
-            $beanstalk->watch($config->tube);
-
-            return $beanstalk;
         }, true);
     }
 }

@@ -3,6 +3,7 @@
 
 define('BASE_PATH', realpath(dirname(__FILE__)));
 
+require BASE_PATH . '/bootstrap/loader.php';
 require BASE_PATH . '/vendor/autoload.php';
 
 use Phalcon\Di\FactoryDefault\Cli as FactoryDefault;
@@ -11,11 +12,11 @@ use App\Core\Cli\Console;
 use App\Providers\ConfigServiceProvider;
 use App\Console\EventListeners\ConsoleEventListener;
 
-// 初始化服务容器，优先注册config服务
 $di = new FactoryDefault();
-$di->register(new ConfigServiceProvider());
-register_services('app.providers.global');
-register_services('app.providers.console');
+
+register(ConfigServiceProvider::class);
+register(config('app.providers.global')->toArray());
+register(config('app.providers.console')->toArray());
 
 $eventsManager = new EventsManager();
 $eventsManager->attach('console', new ConsoleEventListener());
